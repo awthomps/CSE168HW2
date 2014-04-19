@@ -21,6 +21,7 @@ public:
 	void SetAspect(float a);
 	void SetResolution(int x, int y);
 	void LookAt(Vector3 &pos, Vector3 &target, Vector3 &up);
+	void LookAt(Vector3 &pos, Vector3 &target);
 
 	void Render(Scene &s);
 	void SaveBitmap(char *filename);

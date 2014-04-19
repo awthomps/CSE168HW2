@@ -3,3 +3,4 @@ Release/
 *.vcxproj
 *.vcxproj.filters
 *.dll
+*.bmp

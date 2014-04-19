@@ -20,6 +20,11 @@ void Camera::SetResolution(int x, int y) {
 	YRes = y;
 	BMP.Resize(x, y);
 }
+
+void Camera::LookAt(Vector3 &pos, Vector3 &target) {
+	LookAt(pos, target, Vector3(0.0f, 1.0f, 0.0f));
+}
+
 void Camera::LookAt(Vector3 &pos, Vector3 &target, Vector3 &up) {
 	WorldMatrix.d = pos;
 	WorldMatrix.c = WorldMatrix.d - target;

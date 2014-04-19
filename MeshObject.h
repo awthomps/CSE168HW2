@@ -18,6 +18,8 @@ public:
 	bool Intersect(const Ray &ray,Intersection &hit);
 
 	void MakeBox(float x,float y,float z,Material *mtl=0);
+	bool LoadPLY(const char *filename, Material *mtl);
+	void Smooth();
 
 private:
 	int NumVertexes,NumTriangles;
