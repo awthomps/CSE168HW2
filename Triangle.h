@@ -21,6 +21,7 @@ public:
 
 	bool Intersect(const Ray &ray, Intersection &hit) const;
 	Vertex GetVtx(unsigned int i)									{return *Vtx[i];}
+	Vector3 ComputeCenter();
 
 private:
 	Vertex *Vtx[3];

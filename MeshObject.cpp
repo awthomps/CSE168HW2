@@ -214,3 +214,12 @@ void MeshObject::Smooth() {
 	for (i = 0; i<NumVertexes; i++)
 		Vertexes[i].Normal.Normalize();
 }
+
+Triangle** MeshObject::getTriangles() {
+	Triangle** triangles;
+	triangles = new Triangle*[NumTriangles];
+	for (int i = 0; i < NumTriangles; i++) {
+		triangles[i] = &Triangles[i];
+	}
+	return triangles;
+}

@@ -20,6 +20,8 @@ public:
 	void MakeBox(float x,float y,float z,Material *mtl=0);
 	bool LoadPLY(const char *filename, Material *mtl);
 	void Smooth();
+	Triangle** getTriangles();
+	int getNumTriangles() {	return NumTriangles; }
 
 private:
 	int NumVertexes,NumTriangles;
