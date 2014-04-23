@@ -92,10 +92,20 @@ void Camera::RenderPixel(int x, int y, Scene &s) {
 	else {
 		Color newColor = Color(0.0,0.0,0.0);
 		for (int i = 0; i < s.GetNumLights(); ++i) {
-			//compute lighting with this light 
+			//declare locals:
 			Color lightColor, C;
 			Vector3 toLight, ItPos, in, out;
+			Ray toLightRay;
+			Intersection obstruction;
+			
+			//compute lighting with this light 
 			float intensity = s.GetLight(i).Illuminate(hit.Position, lightColor, toLight, ItPos);
+
+			//check if light is blocked:
+			toLightRay.Direction = toLight;
+			toLightRay.Origin = hit.Position;
+			if (s.Intersect(toLightRay, obstruction)) continue;
+
 			C = lightColor;
 			float dotResult = (toLight).Dot(hit.Normal);
 			C.Scale(((dotResult < 0) ? 0 : dotResult) * intensity);
