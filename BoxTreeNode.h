@@ -4,7 +4,7 @@
 #define CSE168_BOXTREENODE_H
 
 #define MAXTRIANGLESPERBOX 10
-#define SHARENUMBER 3
+#define SHARENUMBER 1
 
 #include "Vector3.h"
 #include "Intersection.h"

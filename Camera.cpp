@@ -107,7 +107,7 @@ void Camera::RenderPixel(int x, int y, Scene &s) {
 			//check if light is blocked:
 			toLightRay.Direction = toLight;
 			toLightRay.Origin = hit.Position;
-			if (s.Intersect(toLightRay, obstruction)) continue;
+			//if (s.Intersect(toLightRay, obstruction)) continue;
 
 			C = lightColor;
 			float dotResult = (toLight).Dot(hit.Normal);
@@ -116,6 +116,7 @@ void Camera::RenderPixel(int x, int y, Scene &s) {
 			//add this lighting to the pixel
 			newColor.Add(C);
 		}
+		newColor.getInVector3().Print();
 		BMP.SetPixel(x, y, newColor.ToInt());
 	}
 }

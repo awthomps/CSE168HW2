@@ -211,8 +211,10 @@ void MeshObject::Smooth() {
 		for (j = 0; j<3; j++)
 			tri.GetVtx(j).Normal.Add(cross);
 	}
-	for (i = 0; i<NumVertexes; i++)
+	for (i = 0; i < NumVertexes; i++)
+	{
 		Vertexes[i].Normal.Normalize();
+	}
 }
 
 Triangle** MeshObject::getTriangles() {

@@ -17,22 +17,26 @@ bool BoxTreeNode::Intersect(const Ray &ray, Intersection &hit) {
 	bool hit1 = false, hit2 = false;
 	
 	if (isLeaf && (numTriangles <= MAXTRIANGLESPERBOX) && (numTriangles > 0)) {
-		std::cout << "Triangle Count: " << numTriangles << std::endl;
+		//std::cout << "Triangle Count: " << numTriangles << std::endl;
+		bool success = false;
 		for (int i = 0; i < numTriangles; ++i) {
-			if( Tri[i]->Intersect(ray, hit)) return true;
+			if (Tri[i]->Intersect(ray, hit)) {
+				success = true;
+			}
 		}
-		return false;
+		return success;
 	}
 
 	if (Child1 == 0 || Child2 == 0) {
 		//std::cout << "One of these is null." << std::endl;
+		return false;
 	}
-
-	if (Child1 != 0 && Child2 != 0) {
+	if(Child1 != 0) {
 		hit1 = Child1->TestRay(ray, t1);
+	}
+	if (Child2 != 0) {
 		hit2 = Child2->TestRay(ray, t2);
 	}
-	else return false;
 
 	if (!hit1 && !hit2) {
 		return false;
@@ -101,13 +105,15 @@ void BoxTreeNode::Contruct(int count, Triangle **tri) {
 	float largestMag = BoxMax.x - BoxMin.x;
 
 	//check y and z with x;
-	for (int i = 0; i < 2; ++i) {
+	for (int i = 1; i < 3; ++i) {
 		float currentMag = BoxMax[i] - BoxMin[i];
 		if (largestMag < currentMag) {
 			largestMag = currentMag;
 			largestDim = i;
 		}
 	}
+	
+	//std::cout << "Largest Dimension is:  " << largestDim << std::endl;
 
 
 	//compute splitting plane halfway along largest dimension:
@@ -117,6 +123,7 @@ void BoxTreeNode::Contruct(int count, Triangle **tri) {
 	for (int i = 0; i < 3; ++i) {
 		planePosition[i] = (BoxMax[i] - ((BoxMax[i] - BoxMin[i])/2));
 	}
+	//planePosition.Print();
 
 	//find normal:
 	switch (largestDim) {

@@ -1,5 +1,5 @@
 #include "BoxTreeObject.h"
-
+#include <iostream>
 
 BoxTreeObject::BoxTreeObject()
 {
@@ -21,6 +21,12 @@ void BoxTreeObject::Construct(MeshObject &mesh) {
 
 bool BoxTreeObject::Intersect(const Ray &ray, Intersection &hit) {
 	float t;
-	if (RootNode->TestRay(ray, t)) return RootNode->Intersect(ray, hit);
-	else return false;
+	bool success = false;
+	if (RootNode->TestRay(ray, t)){
+		success = RootNode->Intersect(ray, hit);
+		if (success) {
+			std::cout << "";
+		}
+	}
+	return success;
 }
