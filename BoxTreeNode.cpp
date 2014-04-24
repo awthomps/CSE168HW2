@@ -1,8 +1,9 @@
 #include "BoxTreeNode.h"
-
+#include <iostream>
 
 BoxTreeNode::BoxTreeNode()
 {
+	numTriangles = 0;
 }
 
 
@@ -12,7 +13,54 @@ BoxTreeNode::~BoxTreeNode()
 
 
 bool BoxTreeNode::Intersect(const Ray &ray, Intersection &hit) {
-	return false;
+	float t1, t2;
+	bool hit1 = false, hit2 = false;
+	
+	if (isLeaf && (numTriangles <= MAXTRIANGLESPERBOX) && (numTriangles > 0)) {
+		std::cout << "Triangle Count: " << numTriangles << std::endl;
+		for (int i = 0; i < numTriangles; ++i) {
+			if( Tri[i]->Intersect(ray, hit)) return true;
+		}
+		return false;
+	}
+
+	if (Child1 == 0 || Child2 == 0) {
+		//std::cout << "One of these is null." << std::endl;
+	}
+
+	if (Child1 != 0 && Child2 != 0) {
+		hit1 = Child1->TestRay(ray, t1);
+		hit2 = Child2->TestRay(ray, t2);
+	}
+	else return false;
+
+	if (!hit1 && !hit2) {
+		return false;
+	} 
+	else if (hit1 && !hit2) {
+		//hit1 but not hit2
+		return Child1->Intersect(ray, hit);
+	}
+	else if (hit2 && !hit1) {
+		//hit2 but not hit1
+		return Child2->Intersect(ray, hit);
+	}
+	else { //hit1 and hit2
+		//decide which one is closer:
+		Vector3 hitPoint1, hitPoint2;
+		if (t1 < t2) {
+			bool child1Intersects = Child1->Intersect(ray, hit);
+			if (child1Intersects) return true;
+			else return Child2->Intersect(ray, hit);
+		}
+		else { //t2 <= t1
+			bool child2Intersects = Child2->Intersect(ray, hit);
+			if (child2Intersects) return true;
+			else return Child1->Intersect(ray, hit);
+		}
+		
+
+	}
 }
 
 
@@ -29,8 +77,10 @@ void BoxTreeNode::Contruct(int count, Triangle **tri) {
 		for (int j = 0; j < 3; ++j) {
 			//iterate through x, y, and z checking boxmin and boxmax
 			for (int k = 0; k < 3; ++k) {
-				if (BoxMin[k] > tri[i]->GetVtx(j).Position[k]) BoxMin[k] = tri[i]->GetVtx(j).Position[k];
-				if (BoxMax[k] < tri[i]->GetVtx(j).Position[k]) BoxMax[k] = tri[i]->GetVtx(j).Position[k];
+				//if (BoxMin[k] > tri[i]->GetVtx(j).Position[k]) BoxMin[k] = tri[i]->GetVtx(j).Position[k];
+				//if (BoxMax[k] < tri[i]->GetVtx(j).Position[k]) BoxMax[k] = tri[i]->GetVtx(j).Position[k];
+				BoxMin[k] = Min(BoxMin[k], tri[i]->GetVtx(j).Position[k]);
+				BoxMax[k] = Max(BoxMax[k], tri[i]->GetVtx(j).Position[k]);
 			}
 		}
 	}
@@ -40,8 +90,11 @@ void BoxTreeNode::Contruct(int count, Triangle **tri) {
 		for (int i = 0; i < count; ++i) {
 			Tri[i] = tri[i];
 		}
+		numTriangles = count;
+		isLeaf = true;
 		return;
 	}
+	else numTriangles = 0;
 
 	//determine largest box dimension: x, y, or z
 	int largestDim = 0; //default to x dimension;
@@ -62,7 +115,7 @@ void BoxTreeNode::Contruct(int count, Triangle **tri) {
 
 	//get center of box for center of plane:
 	for (int i = 0; i < 3; ++i) {
-		planePosition[i] = (BoxMax[i] - BoxMin[i]) / 2;
+		planePosition[i] = (BoxMax[i] - ((BoxMax[i] - BoxMin[i])/2));
 	}
 
 	//find normal:
@@ -96,7 +149,9 @@ void BoxTreeNode::Contruct(int count, Triangle **tri) {
 	for (int i = 0; i < count; ++i) {
 
 		//check where the center lies
-		if (tri[i]->ComputeCenter()[largestDim] < planePosition[largestDim]) {
+		Vector3 centerOfTriangle = tri[i]->ComputeCenter();
+		float value = tri[i]->ComputeCenter()[largestDim];
+		if ( value < planePosition[largestDim]) {
 			//less, so place in group 1
 			tri1[count1] = tri[i];
 			++count1;
@@ -110,25 +165,57 @@ void BoxTreeNode::Contruct(int count, Triangle **tri) {
 
 	//check if either group is empty, if so move (at least) 1 triangle into that group
 	if (count1 == 0) {
-		tri1[0] = tri2[count2 - 1];
-		//compensate the counts:
-		++count1;
-		--count2;
+		for (int i = 0; (i < SHARENUMBER) && count2 >= SHARENUMBER; ++i) {
+			tri1[i] = tri2[count2 - 1 - i];
+			//compensate the counts:
+			++count1;
+			--count2;
+		}
+		
+		//std::cout << "Count 1 was zero" << std::endl;
 	}
 	else if (count2 == 0) {
-		tri2[0] = tri1[count1 - 1];
-		//compensate the counts:
-		++count2;
-		--count1;
+		for (int i = 0; (i < SHARENUMBER) && count1 >= SHARENUMBER; ++i)  {
+			tri2[i] = tri1[count1 - 1 - i];
+			//compensate the counts:
+			++count2;
+			--count1;
+		}
+		//std::cout << "Count 2 was zero" << std::endl;
 	}
 
 	//recursively build sub-trees
 	Child1 = new BoxTreeNode;
 	Child2 = new BoxTreeNode;
 	Child1->Contruct(count1, tri1);
+	delete[]tri1; // free tri1
 	Child2->Contruct(count2, tri2);
+	delete[]tri2; //free tri2
 
 	//free up arrays
-	delete []tri1;
-	delete []tri2;
+	//delete []tri1;
+	//delete []tri2;
+}
+
+bool BoxTreeNode::TestRay(const Ray &ray, float &t) {
+
+	//get test t values for x, y, z (0,1,2)
+	float t1[3], t2[3], tmin, tmax;
+	for (int i = 0; i < 3; ++i) {
+		t1[i] = ((BoxMin[i] - ray.Origin[i]) / ray.Direction[i]);
+		t2[i] = ((BoxMax[i] - ray.Origin[i]) / ray.Direction[i]);
+	}
+	tmin = Max(Min(t1[0], t2[0]), Min(t1[1], t2[1]), Min(t1[2], t2[2]));
+	tmax = Min(Max(t1[0], t2[0]), Max(t1[1], t2[1]), Max(t1[2], t2[2]));
+
+	if (tmin <= tmax) {
+		t = tmin;
+		return true;
+	}
+	else if (tmin < 0) {
+		t = tmax;
+		return true;
+	}
+	//tmax < 0
+	return false;
 }

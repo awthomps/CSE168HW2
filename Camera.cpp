@@ -61,9 +61,12 @@ void Camera::Render(Scene &s) {
 	downDelta = up.Magnitude() / YRes;
 	up.Normalize();
 
+	int raycount = 0;
 	for (int y = 0; y < YRes; ++y) {
 		for (int x = 0; x < XRes; ++x) {
 			RenderPixel(x, y, s);
+			if (raycount % 1000 == 0) std::cout << "Firing ray: " << raycount << std::endl;
+			raycount++;
 		}
 	}
 }

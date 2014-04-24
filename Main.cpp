@@ -11,11 +11,12 @@
 #include "BoxTreeObject.h"
 
 void project1();
+void project2();
 
 ////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc,char **argv) {
-	project1();
+	project2();
 	return 0;
 }
 

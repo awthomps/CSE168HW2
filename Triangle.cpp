@@ -78,8 +78,8 @@ bool Triangle::Intersect(const Ray &ray, Intersection &hit) const {
 }
 
 Vector3 Triangle::ComputeCenter() {
-	Vector3 a, b, c, bMa, cMa;
-	int alpha = 0.5, beta = 0.5;
+	Vector3 a, b, c, bMa, cMa, center;
+	float alpha = 0.5, beta = 0.5;
 	a = Vtx[0]->Position;
 	b = Vtx[1]->Position;
 	c = Vtx[2]->Position;
@@ -90,6 +90,6 @@ Vector3 Triangle::ComputeCenter() {
 	bMa.Scale(alpha);
 	cMa = c - a;
 	cMa.Scale(beta);
-
-	return a + bMa + cMa;
+	center = a + bMa + cMa;
+	return center;
 }

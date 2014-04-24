@@ -18,3 +18,9 @@ void BoxTreeObject::Construct(MeshObject &mesh) {
 	int numTriangles = mesh.getNumTriangles();
 	RootNode->Contruct(numTriangles, triangles);
 }
+
+bool BoxTreeObject::Intersect(const Ray &ray, Intersection &hit) {
+	float t;
+	if (RootNode->TestRay(ray, t)) return RootNode->Intersect(ray, hit);
+	else return false;
+}

@@ -16,7 +16,7 @@ public:
 	BoxTreeObject();
 	~BoxTreeObject();
 	void Construct(MeshObject &mesh);
-	bool Intersect(const Ray &ray, Intersection &hit) { return false; };
+	bool Intersect(const Ray &ray, Intersection &hit);
 
 private:
 	BoxTreeNode *RootNode;
