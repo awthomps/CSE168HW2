@@ -34,10 +34,10 @@ bool BoxTreeNode::Intersect(const Ray &ray, Intersection &hit) {
 	}
 	//check to see if children will hit the node or check if the ray exists starting from within the node:
 	if(Child1 != 0) {
-		hit1 = Child1->TestRay(ray, t1) || Child1->ContainsPoint(ray.Origin);
+		hit1 = Child1->TestRay(ray, t1);// || Child1->ContainsPoint(ray.Origin);
 	}
 	if (Child2 != 0) {
-		hit2 = Child2->TestRay(ray, t2) || Child2->ContainsPoint(ray.Origin);
+		hit2 = Child2->TestRay(ray, t2);// || Child2->ContainsPoint(ray.Origin);
 	}
 
 
@@ -236,10 +236,11 @@ bool BoxTreeNode::TestRay(const Ray &ray, float &t) {
 		t = tmin;
 		return true;
 	}
+	/*
 	else if (tmin < 0) {
-		t = 0;
+		t = tmin;
 		return true;
-	}
+	}*/
 	//tmax < 0
 	return false;
 }

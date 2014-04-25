@@ -69,7 +69,7 @@ void Camera::Render(Scene &s) {
 	for (int y = 0; y < YRes; ++y) {
 		for (int x = 0; x < XRes; ++x) {
 			RenderPixel(x, y, s);
-			if (raycount % 1000 == 0) std::cout << "Firing ray: " << raycount << std::endl;
+			//if (raycount % 1000 == 0) std::cout << "Firing ray: " << raycount << std::endl;
 			raycount++;
 		}
 	}
