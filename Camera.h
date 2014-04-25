@@ -9,6 +9,7 @@
 #include "Bitmap.h"
 #include "Scene.h"
 #include "Material.h"
+#include "StopWatch.h"
 #include <iostream>
 
 class Camera
@@ -38,6 +39,7 @@ private:
 	Vector3 topLeft, topRight, bottomLeft, bottomRight, right, up;
 	float rightDelta;
 	float downDelta;
+	StopWatch watch;
 };
 
 #endif

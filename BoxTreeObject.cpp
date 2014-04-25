@@ -12,11 +12,12 @@ BoxTreeObject::~BoxTreeObject()
 }
 
 void BoxTreeObject::Construct(MeshObject &mesh) {
-	//TODO: add the timer to check length of construction:
-
+	
+	watch.StartTime("Start Construction.");
 	Triangle** triangles = mesh.getTriangles();
 	int numTriangles = mesh.getNumTriangles();
 	RootNode->Contruct(numTriangles, triangles);
+	watch.CheckTime("Construction Finished.");
 }
 
 bool BoxTreeObject::Intersect(const Ray &ray, Intersection &hit) {
@@ -24,6 +25,7 @@ bool BoxTreeObject::Intersect(const Ray &ray, Intersection &hit) {
 	bool success = false;
 	if (RootNode->TestRay(ray, t)){
 		success = RootNode->Intersect(ray, hit);
+
 		if (success) {
 			std::cout << "";
 		}

@@ -3,7 +3,7 @@
 #ifndef CSE168_BOXTREENODE_H
 #define CSE168_BOXTREENODE_H
 
-#define MAXTRIANGLESPERBOX 10
+#define MAXTRIANGLESPERBOX 1
 #define SHARENUMBER 1
 
 #include "Vector3.h"
@@ -20,6 +20,7 @@ public:
 	bool Intersect(const Ray &ray, Intersection &hit);
 	void Contruct(int count, Triangle **tri);
 	bool TestRay(const Ray &ray, float &t);
+	bool ContainsPoint(Vector3 point);
 
 private:
 	Vector3 BoxMin, BoxMax;

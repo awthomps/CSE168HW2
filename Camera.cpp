@@ -35,6 +35,10 @@ void Camera::LookAt(Vector3 &pos, Vector3 &target, Vector3 &up) {
 }
 
 void Camera::Render(Scene &s) {
+	
+	//start timer:
+	watch.StartTime("Start Render.");
+
 
 	//create the corners of the rendering window:
 
@@ -65,10 +69,11 @@ void Camera::Render(Scene &s) {
 	for (int y = 0; y < YRes; ++y) {
 		for (int x = 0; x < XRes; ++x) {
 			RenderPixel(x, y, s);
-			if (raycount % 1000 == 0) std::cout << "Firing ray: " << raycount << std::endl;
+			//if (raycount % 1000 == 0) std::cout << "Firing ray: " << raycount << std::endl;
 			raycount++;
 		}
 	}
+	watch.CheckTime("Render Finished.");
 }
 void Camera::SaveBitmap(char *filename) {
 	BMP.SaveBMP(filename);

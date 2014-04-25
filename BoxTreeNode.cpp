@@ -27,16 +27,22 @@ bool BoxTreeNode::Intersect(const Ray &ray, Intersection &hit) {
 		return success;
 	}
 
+	//make sure children are not null
 	if (Child1 == 0 || Child2 == 0) {
 		//std::cout << "One of these is null." << std::endl;
 		return false;
 	}
+	//check to see if children will hit the node, otherwise, check if the ray exists starting from within the node:
 	if(Child1 != 0) {
 		hit1 = Child1->TestRay(ray, t1);
+		if (!hit1) Child1->ContainsPoint(ray.Origin);
 	}
 	if (Child2 != 0) {
 		hit2 = Child2->TestRay(ray, t2);
+		if (!hit2) Child2->ContainsPoint(ray.Origin);
 	}
+
+
 
 	if (!hit1 && !hit2) {
 		return false;
@@ -50,16 +56,29 @@ bool BoxTreeNode::Intersect(const Ray &ray, Intersection &hit) {
 		return Child2->Intersect(ray, hit);
 	}
 	else { //hit1 and hit2
-		//decide which one is closer:
+		//decide which one is closer, also handle case where hit triangle also exists in other space:
 		Vector3 hitPoint1, hitPoint2;
+		Ray initialHit;
 		if (t1 < t2) {
 			bool child1Intersects = Child1->Intersect(ray, hit);
-			if (child1Intersects) return true;
+			if (child1Intersects) {
+				if (Child2->ContainsPoint(hit.Position)) {
+					//we know there is a hit, lets check the other data for a closer hit
+					Child2->Intersect(ray, hit);
+				}
+				return true;
+			}
 			else return Child2->Intersect(ray, hit);
 		}
 		else { //t2 <= t1
 			bool child2Intersects = Child2->Intersect(ray, hit);
-			if (child2Intersects) return true;
+			if (child2Intersects) {
+				if (Child1->ContainsPoint(hit.Position)){
+					//we know there is a hit, lets check the other data for a closer hit
+					Child1->Intersect(ray, hit);
+				}
+				return true;
+			}
 			else return Child1->Intersect(ray, hit);
 		}
 		
@@ -225,4 +244,12 @@ bool BoxTreeNode::TestRay(const Ray &ray, float &t) {
 	}
 	//tmax < 0
 	return false;
+}
+
+bool BoxTreeNode::ContainsPoint(Vector3 point) {
+	//check if point lies in the bounding box
+	for (int i = 0; i < 3; ++i) {
+		if (point[i] < BoxMin[i] || point[i] > BoxMax[i]) return false;
+	}
+	return true;
 }

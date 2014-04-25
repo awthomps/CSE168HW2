@@ -7,6 +7,7 @@
 #include "Ray.h"
 #include "Intersection.h"
 #include "BoxTreeNode.h"
+#include "StopWatch.h"
 
 
 
@@ -20,6 +21,7 @@ public:
 
 private:
 	BoxTreeNode *RootNode;
+	StopWatch watch;
 };
 
 #endif
