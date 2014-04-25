@@ -69,7 +69,7 @@ void Camera::Render(Scene &s) {
 	for (int y = 0; y < YRes; ++y) {
 		for (int x = 0; x < XRes; ++x) {
 			RenderPixel(x, y, s);
-			//if (raycount % 1000 == 0) std::cout << "Firing ray: " << raycount << std::endl;
+			if (raycount % 1000 == 0) std::cout << "Firing ray: " << raycount << std::endl;
 			raycount++;
 		}
 	}
@@ -85,8 +85,8 @@ void Camera::RenderPixel(int x, int y, Scene &s) {
 	
 	//compute ray direction:
 	sentRay.Direction = bottomLeft;
-	sentRay.Direction.AddScaled(right, (x + 0.5) * rightDelta);
-	sentRay.Direction.AddScaled(up, (y + 0.5) * downDelta);
+	sentRay.Direction.AddScaled(right, (float(x) + 0.5f) * rightDelta);
+	sentRay.Direction.AddScaled(up, (float(y) + 0.5f) * downDelta);
 
 	sentRay.Direction = sentRay.Direction - WorldMatrix.d;
 	sentRay.Direction.Normalize();
@@ -105,21 +105,32 @@ void Camera::RenderPixel(int x, int y, Scene &s) {
 			Vector3 toLight, ItPos, in, out;
 			Ray toLightRay;
 			Intersection obstruction;
-			
+
 			//compute lighting with this light 
 			float intensity = s.GetLight(i).Illuminate(hit.Position, lightColor, toLight, ItPos);
 
 			//check if light is blocked:
 			toLightRay.Direction = toLight;
 			toLightRay.Origin = hit.Position;
-			//if (s.Intersect(toLightRay, obstruction)) continue;
+			bool hasObstruction = false;
+			if (s.Intersect(toLightRay, obstruction)) {
+				//check if the light is obstructed:
+				float obstructionDistance = (obstruction.Position - hit.Position).Magnitude();
+				float lightDistance = (ItPos - hit.Position).Magnitude();
+				if (obstructionDistance < lightDistance) {
+					//obstruction blocking light so continue
+					hasObstruction = true;
+				}
+			}
 
-			C = lightColor;
-			float dotResult = (toLight).Dot(hit.Normal);
-			C.Scale(((dotResult < 0) ? 0 : dotResult) * intensity);
+			if (!hasObstruction) {
+				C = lightColor;
+				float dotResult = (toLight).Dot(hit.Normal);
+				C.Scale(((dotResult < 0) ? 0 : dotResult) * intensity);
 
-			//add this lighting to the pixel
-			newColor.Add(C);
+				//add this lighting to the pixel
+				newColor.Add(C);
+			}
 		}
 		//newColor.getInVector3().Print();
 		BMP.SetPixel(x, y, newColor.ToInt());

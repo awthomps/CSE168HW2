@@ -23,7 +23,7 @@ void BoxTreeObject::Construct(MeshObject &mesh) {
 bool BoxTreeObject::Intersect(const Ray &ray, Intersection &hit) {
 	float t;
 	bool success = false;
-	if (RootNode->TestRay(ray, t)){
+	if (RootNode->TestRay(ray, t) || RootNode->ContainsPoint(ray.Origin)){
 		success = RootNode->Intersect(ray, hit);
 
 		if (success) {

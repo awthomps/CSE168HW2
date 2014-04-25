@@ -28,18 +28,16 @@ bool BoxTreeNode::Intersect(const Ray &ray, Intersection &hit) {
 	}
 
 	//make sure children are not null
-	if (Child1 == 0 || Child2 == 0) {
+	if (Child1 == 0 && Child2 == 0) {
 		//std::cout << "One of these is null." << std::endl;
 		return false;
 	}
-	//check to see if children will hit the node, otherwise, check if the ray exists starting from within the node:
+	//check to see if children will hit the node or check if the ray exists starting from within the node:
 	if(Child1 != 0) {
-		hit1 = Child1->TestRay(ray, t1);
-		if (!hit1) Child1->ContainsPoint(ray.Origin);
+		hit1 = Child1->TestRay(ray, t1) || Child1->ContainsPoint(ray.Origin);
 	}
 	if (Child2 != 0) {
-		hit2 = Child2->TestRay(ray, t2);
-		if (!hit2) Child2->ContainsPoint(ray.Origin);
+		hit2 = Child2->TestRay(ray, t2) || Child2->ContainsPoint(ray.Origin);
 	}
 
 
@@ -62,7 +60,7 @@ bool BoxTreeNode::Intersect(const Ray &ray, Intersection &hit) {
 		if (t1 < t2) {
 			bool child1Intersects = Child1->Intersect(ray, hit);
 			if (child1Intersects) {
-				if (Child2->ContainsPoint(hit.Position)) {
+				if (hit.HitDistance > t2){//Child2->ContainsPoint(hit.Position)) {
 					//we know there is a hit, lets check the other data for a closer hit
 					Child2->Intersect(ray, hit);
 				}
@@ -73,7 +71,7 @@ bool BoxTreeNode::Intersect(const Ray &ray, Intersection &hit) {
 		else { //t2 <= t1
 			bool child2Intersects = Child2->Intersect(ray, hit);
 			if (child2Intersects) {
-				if (Child1->ContainsPoint(hit.Position)){
+				if (hit.HitDistance > t1) {//Child1->ContainsPoint(hit.Position)){
 					//we know there is a hit, lets check the other data for a closer hit
 					Child1->Intersect(ray, hit);
 				}
@@ -239,7 +237,7 @@ bool BoxTreeNode::TestRay(const Ray &ray, float &t) {
 		return true;
 	}
 	else if (tmin < 0) {
-		t = tmax;
+		t = 0;
 		return true;
 	}
 	//tmax < 0
