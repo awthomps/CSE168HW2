@@ -20,7 +20,7 @@ public:
 	void Init(Vertex *v0, Vertex *v1, Vertex *v2, Material *m)		{ Vtx[0] = v0; Vtx[1] = v1; Vtx[2] = v2; Mtl = m; }
 
 	bool Intersect(const Ray &ray, Intersection &hit) const;
-	Vertex GetVtx(unsigned int i)									{return *Vtx[i];}
+	Vertex& GetVtx(unsigned int i)									{return *Vtx[i];}
 	Vector3 ComputeCenter();
 
 private:

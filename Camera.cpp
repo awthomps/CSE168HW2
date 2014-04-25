@@ -116,7 +116,7 @@ void Camera::RenderPixel(int x, int y, Scene &s) {
 			//add this lighting to the pixel
 			newColor.Add(C);
 		}
-		newColor.getInVector3().Print();
+		//newColor.getInVector3().Print();
 		BMP.SetPixel(x, y, newColor.ToInt());
 	}
 }
